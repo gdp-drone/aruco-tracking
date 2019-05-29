@@ -1,0 +1,10 @@
+#ifndef ARUCO_TRACKING_TRACKER_H
+#define ARUCO_TRACKING_TRACKER_H
+
+
+class Tracker {
+  
+};
+
+
+#endif //ARUCO_TRACKING_TRACKER_H
