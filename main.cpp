@@ -1,12 +1,10 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>  // cv::Canny()
 #include <opencv2/aruco.hpp>
 
 #include <iostream>
 #include <fstream>
-#include <chrono>
-#include <sys/timeb.h>
+#include <iomanip>
 
 using namespace cv;
 using namespace std;
@@ -42,7 +40,7 @@ double avgfps()
     return _avgfps;
 }
 
-int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, const float arucoSquareDimension) {
+int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, const float arucoSquareDimension, VideoCapture& vid) {
     Mat frame;
     
     vector<int> markerIds;
@@ -51,8 +49,6 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
     
     auto markerDict = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME::DICT_4X4_50);
     
-    VideoCapture vid(0);
-    
     if (!vid.isOpened()) return -1;
     
 //    namedWindow("Camera Feed", WINDOW_AUTOSIZE);
@@ -60,11 +56,9 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
     vector<Vec3d> rotationVec, translationVec;
     
     int frameno=0;
-    ofstream outfile;
-    outfile.open("VsionData.txt", fstream::out);
+    ofstream outfile("VisionData.txt", fstream::out);
     cout << "FrameNo \t Timestamp \t RunningTime \t FPS \t MarkerID \t Dist1 \t Dist2 \t Dist3\n";
     outfile << "FrameNo \t Timestamp \t RunningTime \t FPS \t MarkerID \t Dist1 \t Dist2 \t Dist3\n";
-    
     while (true) {
         clock_t start=CLOCK();
         if (!vid.read(frame)) break;
@@ -78,18 +72,18 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
         //        dst.create( frame.size(), frame.type() );
         //        dst = Scalar::all(0);
         double dur = CLOCK()-start;
-        auto curr = chrono::system_clock::now();
-        time_t currT = chrono::system_clock::to_time_t(curr);
+        auto t = std::time(nullptr);
+        auto tm = *std::localtime(&t);
         frameno++;
         if(markerIds.size() == 0) {
             cout << frameno << "\t"
-                 << ctime(&currT) << "\t"
+                 << put_time(&tm, "%d%m%y--%H:%M:%S") << "\t"
                  << avgdur(dur) << "\t"
                  << avgfps() << "\t"
                  << -1 << "\t"
                  << "0\t0\t0\t\n";
             outfile << frameno << "\t"
-                 << ctime(&currT) << "\t"
+                 << put_time(&tm, "%d-%m-%Y %H-%M-%S") << "\t"
                  << avgdur(dur) << "\t"
                  << avgfps() << "\t"
                  << -1 << "\t"
@@ -98,12 +92,12 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
         for (int i = 0; i < markerIds.size(); i++) {
 //            aruco::drawAxis(frame, cameraMatrix, distanceCoeffs, rotationVec[i], translationVec[i], 0.08f);
             cout << frameno << "\t"
-                 << ctime(&currT) << "\t"
+                 << put_time(&tm, "%d-%m-%Y %H-%M-%S") << "\t"
                  << avgdur(dur) << "\t"
                  << avgfps() << "\t"
                  << markerIds[i];
             outfile << frameno << "\t"
-                 << ctime(&currT) << "\t"
+                 << put_time(&tm, "%d-%m-%Y %H-%M-%S") << "\t"
                  << avgdur(dur) << "\t"
                  << avgfps() << "\t"
                  << markerIds[i];
@@ -115,7 +109,7 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
             cout << endl;
             outfile << endl;
         }
-
+        outfile.flush();
 //        imshow("Camera Feed", frame);
 //        if (waitKey(60) >= 0) break;
     }
@@ -148,8 +142,10 @@ int main(int argc, char **argv) {
     Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
     Mat distanceCoeffs = Mat::zeros(5, 1, CV_64F);
     loadCalibrationMatrices("CalibParams.txt", cameraMatrix, distanceCoeffs);
-
-    startMarkerTracking(cameraMatrix, distanceCoeffs, arucoSquareDimension);
+    int port = 0;
+    if (argc>1) port = stoi(argv[1]);
+    VideoCapture vid(port);
+    startMarkerTracking(cameraMatrix, distanceCoeffs, arucoSquareDimension, vid);
 
     return 0;
 }
