@@ -14,7 +14,7 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
     
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCorners;
-    aruco::DetectorParameters markerParams;
+//    aruco::DetectorParameters markerParams;
     
     auto markerDict = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME::DICT_4X4_50);
     
@@ -22,13 +22,13 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
     
     if (!vid.isOpened()) return -1;
     
-    namedWindow("Camera Feed", WINDOW_AUTOSIZE);
+//    namedWindow("Camera Feed", WINDOW_AUTOSIZE);
     
     vector<Vec3d> rotationVec, translationVec;
     
     while (true) {
         if (!vid.read(frame)) break;
-        Mat reduced_noise, processed, dst;
+//        Mat reduced_noise, processed, dst;
         
         aruco::detectMarkers(frame, markerDict, markerCorners, markerIds);
         aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffs, rotationVec,
@@ -38,15 +38,15 @@ int startMarkerTracking(const Mat &cameraMatrix, const Mat &distanceCoeffs, cons
         //        dst.create( frame.size(), frame.type() );
         //        dst = Scalar::all(0);
         for (int i = 0; i < markerIds.size(); i++) {
-            aruco::drawAxis(frame, cameraMatrix, distanceCoeffs, rotationVec[i], translationVec[i], 0.08f);
+//            aruco::drawAxis(frame, cameraMatrix, distanceCoeffs, rotationVec[i], translationVec[i], 0.08f);
             cout << "Marker Id: ";
             for(int j = 0; j < 3; ++j) {
                 cout << translationVec[i][j] << ", ";
             }
             cout << endl;
         }
-        imshow("Camera Feed", frame);
-        if (waitKey(60) >= 0) break;
+//        imshow("Camera Feed", frame);
+//        if (waitKey(60) >= 0) break;
     }
     return 1;
 }
