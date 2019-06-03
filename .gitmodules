@@ -1,0 +1,3 @@
+[submodule "camera-calibration"]
+	path = camera-calibration
+	url = https://github.com/gdp-drone/camera-calibration.git

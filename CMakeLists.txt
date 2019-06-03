@@ -6,7 +6,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(aruco_tracker main.cpp Tracker.cpp Tracker.h)
+add_executable(aruco_tracker main.cpp TrackerAR.cpp TrackerAR.h Tracker.cpp Tracker.h camera-calibration/CVCalibration.cpp camera-calibration/CVCalibration.h)
 target_link_libraries(aruco_tracker ${OpenCV_LIBS})
 
 add_executable(kalman_tracker kalman_tracker.cpp)

@@ -8,14 +8,24 @@
 #ifndef TrackerAR_h
 #define TrackerAR_h
 
-#include <stdio.h>
+#include <opencv2/core.hpp>
+#include <opencv2/aruco.hpp>
 
-TrackerAR {
-  Mat cameraMatrix, distCoeffs;
-  const float arucoSquareDimension;
+#include "Tracker.h"
+#include "camera-calibration/CVCalibration.h"
+
+using namespace std;
+using namespace cv;
+
+class TrackerAR : public Tracker {
+  float arucoSquareDimension;
+  Ptr<aruco::Dictionary> markerDict = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME::DICT_4X4_50);
+  vector<int> markerIds;
+  vector<vector<Point2f>> markerCorners, rejectedCorners;
+  aruco::DetectorParameters markerParams;
 public:
-  TrackerAR(const float arucoSquareDimension, Mat cameraMatrix, Mat distCoeffs);
-  int TrackerAR::startMarkerTracking(vector<Vec3d> translationVec, vector<Vec3d> rotationVec);
-}
+  TrackerAR(CVCalibration& cvl, float arucoSquareDimension);
+  int getPose(Mat& frame, Vec3d& translationVec, Vec3d& rotationVec) override;
+};
 
 #endif /* TrackerAR_h */
