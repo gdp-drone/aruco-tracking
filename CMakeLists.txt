@@ -11,3 +11,6 @@ target_link_libraries(aruco_tracker ${OpenCV_LIBS})
 
 add_executable(kalman_tracker kalman_tracker.cpp)
 target_link_libraries(kalman_tracker ${OpenCV_LIBS})
+
+add_executable(main_ros main_ros.cpp tracker-ar/TrackerAR.cpp tracker-ar/TrackerAR.h tracker-base/Tracker.cpp tracker-base/Tracker.h camera-calibration/CVCalibration.cpp camera-calibration/CVCalibration.h)
+target_link_libraries(main_ros ${OpenCV_LIBS})
