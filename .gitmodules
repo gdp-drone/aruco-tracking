@@ -7,3 +7,6 @@
 [submodule "tracker-ar"]
 	path = tracker-ar
 	url = git@github.com:vishthemenon/tracker-ar.git
+[submodule "tracker-arb"]
+	path = tracker-arb
+	url = git@github.com:gdp-drone/tracker-arb.git
