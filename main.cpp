@@ -6,7 +6,7 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, char **argv) {
-    const auto arucoSquareDimension = 0.0370f;
+    const auto arucoSquareDimension = 3.70f;
     CVCalibration cvl("CalibParams.txt");
     TrackerAR tracker(cvl, arucoSquareDimension);
     
