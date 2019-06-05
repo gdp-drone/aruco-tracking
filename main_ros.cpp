@@ -46,12 +46,12 @@ int main(int argc, char **argv) {
     }
     if (tracker.getPose(frame, tVec, rVec)) {
       
-      data_msg.linear.x = tVec[2];
+      data_msg.linear.x = tVec[0];
       data_msg.linear.y = tVec[1];
-      data_msg.linear.z = tVec[0];
-      data_msg.angular.x = tVec[2];
+      data_msg.linear.z = tVec[2];
+      data_msg.angular.x = tVec[0];
       data_msg.angular.y = tVec[1];
-      data_msg.angular.z = tVec[0];
+      data_msg.angular.z = tVec[2];
       
       bool_msg.data = 1;
       vishnu_cam_detection_pub.publish(bool_msg);
