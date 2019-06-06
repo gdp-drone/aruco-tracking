@@ -1,6 +1,6 @@
 #include <opencv2/core.hpp>
 
-#include "tracker-ar2/TrackerARB.h"
+#include "tracker-arb/TrackerARB.h"
 
 using namespace cv;
 using namespace std;
