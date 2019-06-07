@@ -56,7 +56,7 @@ public:
     return 0;
     
     // Output modified video stream
-    image_pub_.publish(cv_ptr->toImageMsg());
+    image_pub_.publish(cv_ptr-> ());
   }
 };
 

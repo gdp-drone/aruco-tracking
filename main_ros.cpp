@@ -1,6 +1,6 @@
 #include <opencv2/core.hpp>
 
-#include "tracker-ar/TrackerAR.h"
+#include "tracker-arb/TrackerARB.h"
 
 ///< ROS headers
 #include "ros/ros.h"
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   
   const auto arucoSquareDimension = 0.0370f;
   CVCalibration cvl("CalibParams.txt");
-  TrackerAR tracker(cvl, arucoSquareDimension);
+  TrackerARB tracker(cvl, arucoSquareDimension);
   
   int port = 0;
   if (argc>1) port = stoi(argv[1]);
