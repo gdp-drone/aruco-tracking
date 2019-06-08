@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
   // Publish whether cam is detecting the ARtag
   ros::Publisher vishnu_cam_detection_pub = n.advertise<std_msgs::Bool>("vishnu_cam_detection", 10);
   
-  const auto arucoSquareDimension = 0.0370f;
+  const auto arucoSquareDimension = 3.70f;
   CVCalibration cvl("CalibParams.txt");
   TrackerARB tracker(cvl, arucoSquareDimension);
   
