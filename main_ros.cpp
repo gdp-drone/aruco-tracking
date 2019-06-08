@@ -16,7 +16,6 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, char **argv) {
-  
   // Initialise ROS with node name
   ros::init(argc, argv, "vishnu_cam_node");
   ros::NodeHandle n;
@@ -27,7 +26,6 @@ int main(int argc, char **argv) {
   // Publish whether cam is detecting the ARtag
   ros::Publisher vishnu_cam_detection_pub = n.advertise<std_msgs::Bool>("vishnu_cam_detection", 10);
   
-  
   const auto arucoSquareDimension = 0.0370f;
   CVCalibration cvl("CalibParams.txt");
   TrackerARB tracker(cvl, arucoSquareDimension);
@@ -36,37 +34,33 @@ int main(int argc, char **argv) {
   if (argc>1) port = stoi(argv[1]);
   
   Mat frame;
-  Vec3d tVec, rVec;
+  Vec3d tVec, rVec, ctVec;
   VideoCapture vid(port);
-  
+  vid.set(CAP_PROP_FRAME_WIDTH,640);
+  ROS_INFO("Width: %f, Height: %f", vid.get(CAP_PROP_FRAME_WIDTH), vid.get(CAP_PROP_FRAME_HEIGHT));
   while(true) {
     if(!vid.read(frame)) {
       break;
-      cerr << "Unable to read video frame\n";
+      ROS_INFO("Unable to read video frame");
     }
     if (tracker.getPose(frame, tVec, rVec)) {
-      
-      data_msg.linear.x = tVec[0];
-      data_msg.linear.y = tVec[1];
-      data_msg.linear.z = tVec[2];
-      data_msg.angular.x = tVec[0];
-      data_msg.angular.y = tVec[1];
-      data_msg.angular.z = tVec[2];
-      
-      bool_msg.data = 1;
-      vishnu_cam_detection_pub.publish(bool_msg);
+      tracker.correctedPose(rVec, tVec, ctVec);
+      ROS_INFO("tVec_x: %f, tVec_y: %f, tVec_z: %f", ctVec[0], ctVec[1], ctVec[2]);
+      data_msg.linear.x   = (float) (ctVec[0] /  100);
+      data_msg.linear.y   = (float) (ctVec[1] / 100);
+      data_msg.linear.z   = (float) (ctVec[2] / 100);
+      data_msg.angular.x  = (float) rVec[0];
+      data_msg.angular.y  = (float) rVec[1];
+      data_msg.angular.z  = (float) rVec[2];
       vishnu_cam_data_pub.publish(data_msg);
-      ros::spinOnce();
+
+      bool_msg.data = 1;
     }
     else{
       bool_msg.data = 0;
-      vishnu_cam_detection_pub.publish(bool_msg);
-      ros::spinOnce();
-      
     }
+    vishnu_cam_detection_pub.publish(bool_msg);
+    ros::spinOnce();
   }
-  
-  tracker.startStreamingTrack(port);
-  
   return 0;
 }
