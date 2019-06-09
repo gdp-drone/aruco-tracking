@@ -8,6 +8,8 @@
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Bool.h>
 
+#define DEFAULT_PORT 0
+#define VID_CAPTURE_WIDTH 640
 
 std_msgs::Bool bool_msg;
 geometry_msgs::Twist data_msg;
@@ -26,17 +28,18 @@ int main(int argc, char **argv) {
   // Publish whether cam is detecting the ARtag
   ros::Publisher vishnu_cam_detection_pub = n.advertise<std_msgs::Bool>("vishnu_cam_detection", 10);
   
-  const auto arucoSquareDimension = 3.70f;
+  const float markerLength = 3.70;
+  const float markerSeparation = 8.70;
+  const int markersXY = 2;
   CVCalibration cvl("CalibParams.txt");
-  TrackerARB tracker(cvl, arucoSquareDimension);
+  TrackerARB tracker(cvl, markerLength, markerSeparation, markersXY, true);
   
-  int port = 0;
-  if (argc>1) port = stoi(argv[1]);
+  int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
   
   Mat frame;
   Vec3d tVec, rVec, ctVec;
   VideoCapture vid(port);
-  vid.set(CAP_PROP_FRAME_WIDTH,640);
+  vid.set(CAP_PROP_FRAME_WIDTH, VID_CAPTURE_WIDTH);
   ROS_INFO("Width: %f, Height: %f", vid.get(CAP_PROP_FRAME_WIDTH), vid.get(CAP_PROP_FRAME_HEIGHT));
   while(true) {
     if(!vid.read(frame)) {

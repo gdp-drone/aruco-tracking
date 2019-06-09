@@ -46,17 +46,16 @@ public:
     cv::waitKey(3);
     
     // Get Pose Estimate
-    const auto arucoSquareDimension = 3.70f;
-    Vec3d tVec, rVec;
+    const float markerLength = 3.70;
+    const float markerSeparation = 8.70;
+    const int markersXY = 2;
+    Vec3d tVec, rVec, ctVec;
     CVCalibration cvl("CalibParams.txt");
-    TrackerARB tracker(cvl, arucoSquareDimension);
+    TrackerARB tracker(cvl, markerLength, markerSeparation, markersXY, true);
     
-    tracker.getPose(cv_ptr->image, tVec, rVec);
-    
-    return 0;
-    
-    // Output modified video stream
-    image_pub_.publish(cv_ptr-> ());
+    if (tracker.getPose(cv_ptr->image, tVec, rVec) {
+      tracker.correctedPose(rVec, tVec, ctVec);
+    };
   }
 };
 
