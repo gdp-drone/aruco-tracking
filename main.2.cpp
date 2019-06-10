@@ -7,11 +7,12 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, char **argv) {
-    const float markerLength = 3.70;
-    const float markerSeparation = 8.70;
-    const int markersXY = 2;
+    const float markerLength = 2.59;
+    const float markerSeparation = 1.90;
+    const int markersX = 6;
+    const int markersY = 8;
     CVCalibration cvl("CalibParams.txt");
-    TrackerARB tracker(cvl, markerLength, markerSeparation, markersXY, markersXY, true);
+    TrackerARB tracker(cvl, markerLength, markerSeparation, markersX, markersY, false);
     
     int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
     
