@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
   const float markerSeparation = 8.70;
   const int markersXY = 2;
   CVCalibration cvl("CalibParams.txt");
-  TrackerARB tracker(cvl, markerLength, markerSeparation, markersXY, true);
+  TrackerARB tracker(cvl, markerLength, markerSeparation, markersXY, markersXY, true);
   
   int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
   
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
       break;
       ROS_INFO("Unable to read video frame");
     }
-    if (tracker.getPose(frame, tVec, rVec)) {
+    if (tracker.getPose(frame, tVec, rVec) > 0) {
       tracker.correctedPose(rVec, tVec, ctVec);
       ROS_INFO("tVec_x: %f, tVec_y: %f, tVec_z: %f", ctVec[0], ctVec[1], ctVec[2]);
       data_msg.linear.x   = (float) (ctVec[0] /  100);
