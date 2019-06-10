@@ -48,9 +48,9 @@ int main(int argc, char **argv) {
       ROS_INFO("Unable to read video frame");
     }
     if (tracker.getPose(frame, tVec, rVec) > 0) {
-      tracker.correctedPose(rVec, tVec, ctVec);
+      tracker.getOffsetPose(rVec, tVec, ctVec);
       tracker.smaPose(ctVec, sctVec);
-      ROS_INFO("X: %f, Y: %f, Z: %f", sctVec[0], sctVec[1], sctVec[2]);
+      ROS_INFO("X: %f, Y: %f, Z: %f, \t X': %f, Y': %f, Z': %f", tVec[0], tVec[1], tVec[2], sctVec[0], sctVec[1], sctVec[2]);
       data_msg.linear.x   = (float) (sctVec[0] /  100);
       data_msg.linear.y   = (float) (sctVec[1] / 100);
       data_msg.linear.z   = (float) (sctVec[2] / 100);
