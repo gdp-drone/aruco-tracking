@@ -28,8 +28,8 @@ int main(int argc, char **argv) {
   // Publish whether cam is detecting the ARtag
   ros::Publisher vishnu_cam_detection_pub = n.advertise<std_msgs::Bool>("vishnu_cam_detection", 10);
   
-  const float markerLength = 2.59;
-  const float markerSeparation = 1.90;
+  const float markerLength = 3.62;
+  const float markerSeparation = 2.63;
   const int markersX = 6;
   const int markersY = 8;
   CVCalibration cvl("CalibParams.txt");
@@ -47,25 +47,27 @@ int main(int argc, char **argv) {
       break;
       ROS_INFO("Unable to read video frame");
     }
-    if (tracker.getPose(frame, tVec, rVec) > 0) {
-      tracker.getOffsetPose(rVec, tVec, ctVec);
-      tracker.smaPose(ctVec, sctVec);
-      ROS_INFO("X: %f, Y: %f, Z: %f, \t X': %f, Y': %f, Z': %f", tVec[0], tVec[1], tVec[2], sctVec[0], sctVec[1], sctVec[2]);
-      data_msg.linear.x   = (float) (sctVec[0] /  100);
-      data_msg.linear.y   = (float) (sctVec[1] / 100);
-      data_msg.linear.z   = (float) (sctVec[2] / 100);
-      data_msg.angular.x  = (float) rVec[0];
-      data_msg.angular.y  = (float) rVec[1];
-      data_msg.angular.z  = (float) rVec[2];
-      vishnu_cam_data_pub.publish(data_msg);
-
-      bool_msg.data = 1;
+    if (tracker.detectLandingPad(frame)) {
+      if (tracker.getPose(frame, tVec, rVec) > 0) {
+        tracker.getOffsetPose(rVec, tVec, ctVec);
+        tracker.smaPose(ctVec, sctVec);
+        ROS_INFO("X: %f, Y: %f, Z: %f, \t X': %f, Y': %f, Z': %f", tVec[0], tVec[1], tVec[2], sctVec[0], sctVec[1],
+                 sctVec[2]);
+        data_msg.linear.x = (float) (sctVec[0] / 100);
+        data_msg.linear.y = (float) (sctVec[1] / 100);
+        data_msg.linear.z = (float) (sctVec[2] / 100);
+        data_msg.angular.x = (float) rVec[0];
+        data_msg.angular.y = (float) rVec[1];
+        data_msg.angular.z = (float) rVec[2];
+        vishnu_cam_data_pub.publish(data_msg);
+    
+        bool_msg.data = 1;
+      } else {
+        bool_msg.data = 0;
+      }
+      vishnu_cam_detection_pub.publish(bool_msg);
+      ros::spinOnce();
     }
-    else{
-      bool_msg.data = 0;
-    }
-    vishnu_cam_detection_pub.publish(bool_msg);
-    ros::spinOnce();
   }
   return 0;
 }
