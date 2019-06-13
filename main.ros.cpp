@@ -14,6 +14,7 @@
 #define DEFAULT_PORT 0
 #define VID_CAPTURE_WIDTH 640
 #define SAVE_VIDEO 0
+#define FPS_LIMIT 10
 
 std_msgs::Bool bool_msg;
 geometry_msgs::Twist data_msg;
@@ -70,8 +71,11 @@ int main(int argc, char **argv) {
   Vec3d tVec, rVec, ctVec, sctVec;
   VideoCapture vid(port);
   vid.set(CAP_PROP_FRAME_WIDTH, VID_CAPTURE_WIDTH);
-  ROS_INFO("Width: %f, Height: %f", vid.get(CAP_PROP_FRAME_WIDTH), vid.get(CAP_PROP_FRAME_HEIGHT));
+  ROS_INFO("Widtxh: %f, Height: %f", vid.get(CAP_PROP_FRAME_WIDTH), vid.get(CAP_PROP_FRAME_HEIGHT));
+  int counter = 0;
   while (true) {
+    counter++;
+    if(counter%10 == 0) continue;
     if (sigflag) {
       ROS_INFO("Kill Signal Detected:Exiting vishnu_cam");
       break;
