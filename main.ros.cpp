@@ -1,5 +1,7 @@
 #include <opencv2/core.hpp>
+#include <opencv2/videoio.hpp>
 
+#include <chrono>
 #include "tracker-arb/TrackerARB.h"
 
 ///< ROS headers
@@ -10,6 +12,7 @@
 
 #define DEFAULT_PORT 0
 #define VID_CAPTURE_WIDTH 640
+#define SAVE_VIDEO 0
 
 std_msgs::Bool bool_msg;
 geometry_msgs::Twist data_msg;
@@ -34,19 +37,38 @@ int main(int argc, char **argv) {
   const int markersY = 8;
   CVCalibration cvl("CalibParams.txt");
   TrackerARB tracker(cvl, markerLength, markerSeparation, markersX, markersY, false);
+  VideoWriter rawVideo, procVideo;
+  
+  auto start = chrono::system_clock::now();
+  time_t start_time = std::chrono::system_clock::to_time_t(start);
+  ostringstream filename;
+  filename << "Test Video - " << std::ctime(&start_time) << ".avi";
+  string procFilename = filename.str();
+  string rawFilename = "Raw " + filename.str();
+  int saveVideo = argc > 2 ? stoi(argv[2]) : SAVE_VIDEO;
+  if (saveVideo == 1) {
+    rawVideo = VideoWriter(rawFilename, VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
+                           Size(cvl.frameWidth, cvl.frameHeight),
+                           true);
+    procVideo = VideoWriter(procFilename, VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
+                            Size(cvl.frameWidth, cvl.frameHeight),
+                            true);
+  }
   
   int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
+  
   
   Mat frame;
   Vec3d tVec, rVec, ctVec, sctVec;
   VideoCapture vid(port);
   vid.set(CAP_PROP_FRAME_WIDTH, VID_CAPTURE_WIDTH);
   ROS_INFO("Width: %f, Height: %f", vid.get(CAP_PROP_FRAME_WIDTH), vid.get(CAP_PROP_FRAME_HEIGHT));
-  while(true) {
-    if(!vid.read(frame)) {
+  while (true) {
+    if (!vid.read(frame)) {
       break;
       ROS_INFO("Unable to read video frame");
     }
+    if (saveVideo) rawVideo.write(frame);
     if (tracker.detectLandingPad(frame)) {
       if (tracker.getPose(frame, tVec, rVec) > 0) {
         tracker.getOffsetPose(rVec, tVec, ctVec);
@@ -60,14 +82,15 @@ int main(int argc, char **argv) {
         data_msg.angular.y = (float) rVec[1];
         data_msg.angular.z = (float) rVec[2];
         vishnu_cam_data_pub.publish(data_msg);
-    
+        
         bool_msg.data = 1;
-      } else {
-        bool_msg.data = 0;
       }
-      vishnu_cam_detection_pub.publish(bool_msg);
-      ros::spinOnce();
+    } else {
+      bool_msg.data = 0;
     }
+    vishnu_cam_detection_pub.publish(bool_msg);
+    ros::spinOnce();
+    if (saveVideo) procVideo.write(frame);
   }
   return 0;
 }

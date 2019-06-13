@@ -25,3 +25,6 @@ target_link_libraries(tracker_ros ${OpenCV_LIBS})
 
 add_executable(tracker_gazebo main.gazebo.cpp ${SRC_V1_1})
 target_link_libraries(tracker_gazebo ${OpenCV_LIBS})
+
+add_executable(create_board tracker-arb/create_board.cpp ${SRC_V1_1})
+target_link_libraries(create_board ${OpenCV_LIBS})

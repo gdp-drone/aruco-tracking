@@ -1,4 +1,6 @@
 #include <opencv2/core.hpp>
+
+#include <chrono>
 #include "tracker-arb/TrackerARB.h"
 
 #define DEFAULT_PORT 0
@@ -13,9 +15,17 @@ int main(int argc, char **argv) {
     const int markersY = 8;
     CVCalibration cvl("CalibParams.txt");
     TrackerARB tracker(cvl, markerLength, markerSeparation, markersX, markersY, true);
+  
+    auto start = chrono::system_clock::now();
+    time_t start_time = std::chrono::system_clock::to_time_t(start);
+    ostringstream filename;
+    filename << "Test Video - " << std::ctime(&start_time) << ".avi";
+    string sFilename = filename.str();
+    bool saveVideo = true;
     
     int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
     
-    tracker.startStreamingTrack(port);
+    tracker.startVideoTrack("TestTakeOff4.mkv");
+//    tracker.startStreamingTrack(port, saveVideo, sFilename);
     return 0;
 }
