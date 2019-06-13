@@ -2,6 +2,7 @@
 #include <opencv2/videoio.hpp>
 
 #include <chrono>
+#include <signal.h>
 #include "tracker-arb/TrackerARB.h"
 
 ///< ROS headers
@@ -19,6 +20,13 @@ geometry_msgs::Twist data_msg;
 
 using namespace cv;
 using namespace std;
+
+static volatile sig_atomic_t sigflag = 0;
+
+void handle_sig(int sig) {
+  ROS_INFO("SIGNAL: %d received", sig);
+  sigflag = 1;
+}
 
 int main(int argc, char **argv) {
   // Initialise ROS with node name
@@ -64,6 +72,11 @@ int main(int argc, char **argv) {
   vid.set(CAP_PROP_FRAME_WIDTH, VID_CAPTURE_WIDTH);
   ROS_INFO("Width: %f, Height: %f", vid.get(CAP_PROP_FRAME_WIDTH), vid.get(CAP_PROP_FRAME_HEIGHT));
   while (true) {
+    if (sigflag) {
+      ROS_INFO("Kill Signal Detected:Exiting vishnu_cam");
+      break;
+    }
+    
     if (!vid.read(frame)) {
       break;
       ROS_INFO("Unable to read video frame");
