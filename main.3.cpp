@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include "tracker-arb/TrackerARB.h"
+#include "tracker-hsv/TrackerHSV.h"
 
 #define DEFAULT_PORT 0
 
@@ -14,7 +15,7 @@ int main(int argc, char **argv) {
     const int markersX = 6;
     const int markersY = 8;
     CVCalibration cvl("CalibParams.txt");
-    TrackerARB tracker(cvl, markerLength, markerSeparation, markersX, markersY, true);
+    TrackerHSV tracker(cvl, true);
   
     auto start = chrono::system_clock::now();
     time_t start_time = std::chrono::system_clock::to_time_t(start);
@@ -25,7 +26,7 @@ int main(int argc, char **argv) {
     
     int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
     
-    tracker.startVideoTrack("TestTakeOff4.mkv", saveVideo, sFilename);
+    tracker.startVideoTrack("TestTakeOff4.mkv");
 //    tracker.startStreamingTrack(port, saveVideo, sFilename);
     return 0;
 }
