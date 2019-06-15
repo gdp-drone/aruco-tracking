@@ -6,11 +6,12 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 link_libraries(${OpenCV_LIBS})
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND SRC_BASE    tracker-base/Tracker.cpp camera-calibration/CVCalibration.cpp)
 list(APPEND SRC_V1      tracker-ar/TrackerAR.cpp ${SRC_BASE})
 list(APPEND SRC_V1_1    tracker-arb/TrackerARB.cpp ${SRC_BASE})
-list(APPEND SRC_V2      tracker-arb/TrackerARB.cpp tracker-hsv/TrackerHSV.cpp ${SRC_BASE})
+list(APPEND SRC_V2      tracker-arb/TrackerARB.cpp tracker-hsv/TrackerHSV.cpp agent-xb/AgentXB.cpp ${SRC_BASE})
 
 # Tracker - v1.0
 

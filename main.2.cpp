@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     
     int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
     
-    tracker.startVideoTrack("TestTakeOff4.mkv", saveVideo, sFilename);
+    tracker.startVideoTrack("./data/TestTakeOff4.mp4", saveVideo, sFilename);
 //    tracker.startStreamingTrack(port, saveVideo, sFilename);
     return 0;
 }

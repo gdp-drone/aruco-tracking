@@ -1,7 +1,9 @@
 #include <opencv2/core.hpp>
+#include <iostream>
 
 #include "tracker-arb/TrackerARB.h"
 #include "tracker-hsv/TrackerHSV.h"
+#include "agent-xb/AgentXB.h"
 
 #define DEFAULT_PORT 0
 
@@ -17,7 +19,8 @@ int main(int argc, char **argv) {
   int markersX = 6;
   int markersY = 8;
   int markerDict = 0;
-  TrackerARB tracker_s(cvl, markerLength, markerSeparation, markersX, markersY, markerDict, true);
+  unique_ptr<Tracker> tracker_s(
+      new TrackerARB(cvl, markerLength, markerSeparation, markersX, markersY, markerDict, true));
   
   // Instantiate tracker of larger markers
   markerLength = 9.89;
@@ -25,14 +28,22 @@ int main(int argc, char **argv) {
   markersX = 2;
   markersY = 2;
   markerDict = 4;
-  TrackerARB tracker_l(cvl, markerLength, markerSeparation, markersX, markersY, markerDict, true);
+  
+  unique_ptr<Tracker> tracker_l(
+      new TrackerARB(cvl, markerLength, markerSeparation, markersX, markersY, markerDict, true));
+  
+  AgentXB trackingAgent(AgentXB::MODE_GREEDY, true);
+  trackingAgent.addTracker(move(tracker_l));
+  trackingAgent.addTracker(move(tracker_s));
   
   string sFilename = "./output/Test Video";
-  bool saveVideo = true;
+  auto saveVideo = true;
   
   int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
   
-  tracker_l.startVideoTrack("./data/TestTakeOff4.mp4", saveVideo, sFilename);
+  trackingAgent.startVideoTrack("./data/TestTakeOff4.mp4", saveVideo, sFilename);
+  
+//  trackingAgent.trackers[0]->startVideoTrack("./data/TestTakeOff4.mp4", saveVideo, sFilename);
 //    tracker.startStreamingTrack(port, saveVideo, sFilename);
   return 0;
 }
