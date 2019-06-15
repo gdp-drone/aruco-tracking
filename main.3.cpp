@@ -32,16 +32,22 @@ int main(int argc, char **argv) {
   unique_ptr<Tracker> tracker_l(
       new TrackerARB(cvl, markerLength, markerSeparation, markersX, markersY, markerDict, true));
   
+  // Instantiate HSV tracker
+  unique_ptr<Tracker> tracker_hsv(
+      new TrackerHSV(cvl, true));
+  
+  // Instantiate Tracking Agent with trackers
   AgentXB trackingAgent(AgentXB::MODE_GREEDY, true);
-  trackingAgent.addTracker(move(tracker_l));
+  trackingAgent.addTracker(move(tracker_hsv));
   trackingAgent.addTracker(move(tracker_s));
+  trackingAgent.addTracker(move(tracker_l));
   
   string sFilename = "./output/Test Video";
   auto saveVideo = true;
   
   int port = argc > 1 ? stoi(argv[1]) : DEFAULT_PORT;
   
-  trackingAgent.startVideoTrack("./data/TestTakeOff4.mp4", saveVideo, sFilename);
+  trackingAgent.startVideoTrack("./data/TestTakeOff2.mp4", saveVideo, sFilename);
   
 //  trackingAgent.trackers[0]->startVideoTrack("./data/TestTakeOff4.mp4", saveVideo, sFilename);
 //    tracker.startStreamingTrack(port, saveVideo, sFilename);
