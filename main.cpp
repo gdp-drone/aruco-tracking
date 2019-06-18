@@ -13,6 +13,6 @@ int main(int argc, char **argv) {
     int port = 0;
     if (argc>1) port = stoi(argv[1]);
     
-    tracker.startStreamingTrack(port);
+    tracker.startVideoTrack("./data/silwoodTest2.mov", true, "V1Test");
     return 0;
 }

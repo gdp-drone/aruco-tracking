@@ -38,9 +38,9 @@ int main(int argc, char **argv) {
   
   // Instantiate Tracking Agent with trackers
   AgentXB trackingAgent(AgentXB::MODE_GREEDY, true);
-  trackingAgent.addTracker(move(tracker_hsv));
   trackingAgent.addTracker(move(tracker_s));
   trackingAgent.addTracker(move(tracker_l));
+  trackingAgent.addTracker(move(tracker_hsv));
   
   string sFilename = "./output/Test Video";
   auto saveVideo = true;

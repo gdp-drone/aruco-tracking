@@ -28,3 +28,5 @@ add_executable(create_board tracker-arb/create_board.cpp ${SRC_V1_1})
 # Tracker - v2.0
 
 add_executable(tracker_v3 main.3.cpp ${SRC_V2})
+
+add_executable(cpuinfo scratch/cpuinfo.cpp)

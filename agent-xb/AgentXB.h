@@ -32,11 +32,11 @@ class AgentXB {
   
   int getFrameHeight();
   
-  bool greedyTrack(Mat &frame, Vec3d &tVec, Vec3d &rVec);
 
 public:
   static const int MODE_GREEDY = 0;
   static const int MODE_ROLLING = 1;
+  bool greedyTrack(Mat &frame, Vec3d &tVec, Vec3d &rVec);
   
   void addTracker(unique_ptr<Tracker> t);
   
